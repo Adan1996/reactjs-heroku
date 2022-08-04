@@ -7,12 +7,14 @@ import { Button, Card, Container, Row, Col, Form} from 'react-bootstrap';
 import './App.css';
 
 
-function App() {
+const App = () => {
 
   const [search, setSearch] = useState("music");
   const [weatherData, setWeatherData] = useState([]);
 
   const [loading, setLoading] = useState(false);
+
+  const [title, setTitle] = useState('');
 
   const getData = () => {
     setLoading(true);
@@ -27,17 +29,18 @@ function App() {
       });
   };
 
-  const handleSubmit = () => {
-    axios.post('http://localhost:2000/whislist-api/whislist', {
-      title: 'Test'
+  const handleSubmit = event => {
+    event.preventDefault();
+
+    axios.post(`http://localhost:2000/whislist-api/whislist`, { title })
+    .then(res => {
+      if(res.data.title === "") {
+        alert("Title is empty");
+      } else {
+        alert(res.data.title + " success to whislist!");
+      }
     })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  };
+  }
 
 
   useEffect(() => {
@@ -71,7 +74,10 @@ function App() {
                               Ratings: <Rater total={5} rating={5} />
                             </Card.Text>
                           </Card.Body>
-                          <Button onClick={handleSubmit}>whislist</Button>
+                          <form>
+                              <input type="hidden" value={data.volumeInfo.title} onChange={(e) => setTitle(e.target.value)}/>
+                              <button onClick={handleSubmit}>whislist</button>
+                          </form>
                         </Card>
                       </div>
                     </Col>
